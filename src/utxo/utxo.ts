@@ -129,7 +129,7 @@ export const addressUtxos = async ({
   const runeUtxos: FormattedUtxo[] = []
   const otherUtxos: FormattedUtxo[] = []
   let alkaneUtxos: FormattedUtxo[] = []
-  const multiCall = await provider.sandshrew.multiCall([
+  const multiCall = await provider.multiCall([
     ['esplora_address::utxo', [address]],
     ['btc_getblockcount', []],
   ])
@@ -163,7 +163,7 @@ export const addressUtxos = async ({
     try {
       const txIdVout = `${utxo.txid}:${utxo.vout}`
 
-      const multiCall = await provider.sandshrew.multiCall([
+      const multiCall = await provider.multiCall([
         ['ord_output', [txIdVout]],
         ['esplora_tx', [utxo.txid]],
         [

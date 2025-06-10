@@ -15,6 +15,7 @@ export const DEFAULT_PROVIDER = {
     projectId: process.env.SANDSHREW_PROJECT_ID!,
     network: bitcoin.networks.bitcoin,
     networkType: 'mainnet',
+    fallbackToBlockstream: true,
   }),
   regtest: new Provider({
     url: 'http://localhost:18888',
@@ -35,6 +36,7 @@ export const DEFAULT_PROVIDER = {
     version: 'v2',
     network: bitcoin.networks.testnet,
     networkType: 'testnet',
+    fallbackToBlockstream: true,
   }),
 }
 
