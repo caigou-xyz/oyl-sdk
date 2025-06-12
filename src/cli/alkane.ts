@@ -162,14 +162,23 @@ export const alkaneTokenDeploy = new AlkanesCommand('new-token')
     '-resNumber, --reserveNumber <reserveNumber>',
     'Number to reserve for factory id'
   )
-  .requiredOption('-c, --cap <cap>', 'the token cap')
-  .requiredOption('-name, --token-name <name>', 'the token name')
-  .requiredOption('-symbol, --token-symbol <symbol>', 'the token symbol')
   .requiredOption(
-    '-amount, --amount-per-mint <amount-per-mint>',
-    'Amount of tokens minted each time mint is called'
+    '-data, --calldata <calldata>',
+    'op code + params to be used when deploying a contracts (do not given deploy params like: [1,0], [3,n], [5,n], [6,n], default is [6, reserveNumber])',
+    (value, previous) => {
+      const items = value.split(',')
+      return previous ? previous.concat(items) : items
+    },
+    []
   )
-  .option('-pre, --premine <premine>', 'amount to premine')
+  // .requiredOption('-c, --cap <cap>', 'the token cap')
+  // .requiredOption('-name, --token-name <name>', 'the token name')
+  // .requiredOption('-symbol, --token-symbol <symbol>', 'the token symbol')
+  // .requiredOption(
+  //   '-amount, --amount-per-mint <amount-per-mint>',
+  //   'Amount of tokens minted each time mint is called'
+  // )
+  // .option('-pre, --premine <premine>', 'amount to premine')
   .option(
     '-i, --image <image>',
     'Relative path to image file to deploy (e.g., "../alkanes/free_mint.wasm")'
@@ -187,34 +196,42 @@ export const alkaneTokenDeploy = new AlkanesCommand('new-token')
         account: wallet.account,
         provider: wallet.provider,
       })
-    const tokenName = packUTF8(options.tokenName)
-    const tokenSymbol = packUTF8(options.tokenSymbol)
+    // const tokenName = packUTF8(options.tokenName)
+    // const tokenSymbol = packUTF8(options.tokenSymbol)
 
-    if (tokenName.length > 2) {
-      throw new Error('Token name too long')
-    }
+    // if (tokenName.length > 2) {
+    //   throw new Error('Token name too long')
+    // }
 
-    if (tokenSymbol.length > 1) {
-      throw new Error('Token symbol too long')
-    }
+    // if (tokenSymbol.length > 1) {
+    //   throw new Error('Token symbol too long')
+    // }
 
-    const calldata = [
+    const callData: bigint[] = [
       BigInt(6),
       BigInt(options.reserveNumber),
-      BigInt(0),
-      BigInt(options.premine ?? 0),
-      BigInt(options.amountPerMint),
-      BigInt(options.cap),
-      BigInt(
-        '0x' + tokenName[0]
-      ),
-      BigInt(
-        tokenName.length > 1 ? '0x' + tokenName[1] : 0
-      ),
-      BigInt(
-        '0x' + tokenSymbol[0]
-      ),
     ]
+    for (let i = 0; i < options.calldata.length; i++) {
+      callData.push(BigInt(options.calldata[i]))
+    }
+
+    // const calldata = [
+    //   BigInt(6),
+    //   BigInt(options.reserveNumber),
+    //   BigInt(0),
+    //   BigInt(options.premine ?? 0),
+    //   BigInt(options.amountPerMint),
+    //   BigInt(options.cap),
+    //   BigInt(
+    //     '0x' + tokenName[0]
+    //   ),
+    //   BigInt(
+    //     tokenName.length > 1 ? '0x' + tokenName[1] : 0
+    //   ),
+    //   BigInt(
+    //     '0x' + tokenSymbol[0]
+    //   ),
+    // ]
 
     const protostone = encodeRunestoneProtostone({
       protostones: [
@@ -223,7 +240,7 @@ export const alkaneTokenDeploy = new AlkanesCommand('new-token')
           edicts: [],
           pointer: 0,
           refundPointer: 0,
-          calldata: encipher(calldata),
+          calldata: encipher(callData),
         }),
       ],
     }).encodedRunestone
