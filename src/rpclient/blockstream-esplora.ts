@@ -55,9 +55,9 @@ export class BlockstreamEsploraClient {
 
   constructor(networkType: 'mainnet' | 'testnet' | 'signet') {
     if (networkType === 'mainnet') {
-      this.baseUrl = 'https://blockstream.info/api'
+      this.baseUrl = 'https://mempool.space/api'
     } else if (networkType === 'testnet') {
-      this.baseUrl = 'https://blockstream.info/testnet/api'
+      this.baseUrl = 'https://mempool.space/signet/api'
     } else if (networkType === 'signet') {
       this.baseUrl = 'https://mempool.space/signet/api'
     } else {
