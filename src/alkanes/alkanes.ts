@@ -219,12 +219,13 @@ export const createExecutePsbt = async ({
     const output = { script: protostone, value: 0 }
     psbt.addOutput(output)
 
-    const changeAmount =
+    const changeAmount = Math.floor(
       gatheredUtxos.totalAmount +
       (alkaneUtxos?.totalSatoshis || 0) -
       finalFee -
       546 -
       (frontendFee || 0)
+    )
 
     psbt.addOutput({
       address: account[account.spendStrategy.changeAddress].address,
@@ -375,13 +376,14 @@ export const createDeployCommitPsbt = async ({
     }
 
     psbt.addOutput({
-      value: finalFee + wasmDeploySize + 546,
+      value: Math.ceil(finalFee + wasmDeploySize + 546),
       address: inscriberInfo.address,
     })
 
-    const changeAmount =
+    const changeAmount = Math.floor(
       gatheredUtxos.totalAmount -
       (finalFee * 2 + wasmDeploySize + inscriptionSats)
+    )
 
     psbt.addOutput({
       address: account[account.spendStrategy.changeAddress].address,
@@ -487,7 +489,7 @@ export const createDeployRevealPsbt = async ({
     })
 
     const revealTxBaseFee = minFee * feeRate < 250 ? 250 : minFee * feeRate
-    const revealTxChange = fee === 0 ? 0 : Number(revealTxBaseFee) - fee
+    const revealTxChange = fee === 0 ? 0 : Math.ceil(Number(revealTxBaseFee) - fee)
 
     const commitTxOutput = await getOutputValueByVOutIndex({
       txId: commitTxId,
@@ -947,7 +949,7 @@ export const createTransactReveal = async ({
     })
 
     const revealTxBaseFee = minFee * feeRate < 250 ? 250 : minFee * feeRate
-    const revealTxChange = fee === 0 ? 0 : Number(revealTxBaseFee) - fee
+    const revealTxChange = fee === 0 ? 0 : Math.ceil(Number(revealTxBaseFee) - fee)
 
     const commitTxOutput = await getOutputValueByVOutIndex({
       txId: commitTxId,
